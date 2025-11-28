@@ -17,6 +17,10 @@ app.use(
 );
 app.use(express.json({ limit: "1mb" }));
 
+app.get("/", (req, res) => {  
+  res.send("Backend is running...");
+});
+
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api", useRouter);
