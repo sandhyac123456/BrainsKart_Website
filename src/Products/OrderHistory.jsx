@@ -87,7 +87,6 @@ function OrderHistory() {
         </div>
       </div>
 
-      {/* Filter Controls */}
       <div
         style={{
           display: "flex",
@@ -140,7 +139,7 @@ function OrderHistory() {
         </select>
       </div>
 
-      {/* Date Picker */}
+     
       {showDatePicker && (
         <div style={{ textAlign: "center", marginTop: "15px" }}>
           <div style={{ textAlign: "center", marginTop: "15px" }}>
@@ -180,7 +179,7 @@ function OrderHistory() {
               className="btn-4"
               onClick={fetchOrders}
             >
-              ✅ Apply
+               Apply
             </button>
             <button
               style={{ background: "red", color: "white" ,width:"120px"}}
@@ -192,7 +191,7 @@ function OrderHistory() {
                 setView("today");
               }}
             >
-              ❌ Cancel
+               Cancel
             </button>
           </div>
         </div>
@@ -209,7 +208,7 @@ function OrderHistory() {
         Total Orders: {orders.length}
       </div>
 
-      {/* Orders */}
+
       <div
         style={{
           display: "flex",

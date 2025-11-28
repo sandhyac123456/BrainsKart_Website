@@ -1,9 +1,9 @@
 import axios from "axios";
+const API = import.meta.env.VITE_API_URL ;
 
-//  Add item to cart
 export const addToCart = async (userId, item) => {
   try {
-    const res = await axios.post(`http://localhost:5000/api/cart`, {
+    const res = await axios.post(`${API}/api/cart`, {
       userId,
       product:item,
     });
@@ -13,21 +13,19 @@ export const addToCart = async (userId, item) => {
   }
 };
 
-//  Get user's cart items
 export const getCart = async (userId) => {
   try {
-    const res = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+    const res = await axios.get(`${API}/${userId}`);
     return res.data;
   } catch (error) {
     console.log("Get cart error", error);
   }
 };
 
-//  Remove an item from cart
 export const removeFromCart = async (userId, productId) => {
   try {
     const res = await axios.delete(
-      `http://localhost:5000/api/cart/remove/${userId}/${productId}`
+      `${API}/api/cart/remove/${userId}/${productId}`
     );
     return res.data;
   } catch (error) {
@@ -35,10 +33,9 @@ export const removeFromCart = async (userId, productId) => {
   }
 };
 
-//  Update quantity of an item in cart
 export const updateQuantity = async (userId, productId, quantity) => {
   try {
-    const res = await axios.put(`http://localhost:5000/api/cart/update/${userId}`, {
+    const res = await axios.put(`${API}/api/cart/update/${userId}`, {
       productId,
       quantity,
     });

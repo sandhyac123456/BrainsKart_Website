@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Order = require("../Model/Order");
 
-// Create order
 router.post("/", async (req, res) => {
   try {
     const newOrder = new Order(req.body);
@@ -13,13 +12,12 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get address by user email
 router.get("/user-address-email/:email", async (req, res) => {
-  const email = req.params.email;  // fix: get from params directly
+  const email = req.params.email;  
 
   try {
     const Orders = await Order.find({ "address.email": email }).sort({ createdAt: -1 });
-    const order = Orders[0]; // Get the latest order
+    const order = Orders[0];
     if (order) {
       res.json(order.address);
     } else {
@@ -30,7 +28,6 @@ router.get("/user-address-email/:email", async (req, res) => {
   }
 });
 
-// Get all orders in orderHistory
 router.get("/", async (req, res) => {
   const orders = await Order.find().sort({
     createdAt: 1,
@@ -38,7 +35,6 @@ router.get("/", async (req, res) => {
   res.json(orders);
 });
 
-// GET today's orders
 router.get("/today", async (req, res) => {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
@@ -53,7 +49,6 @@ router.get("/today", async (req, res) => {
   res.json(todayOrders);
 });
 
-// GET orders by date range
 router.post("/range", async (req, res) => {
   const { startDate, endDate } = req.body;
   const orders = await Order.find({
@@ -65,7 +60,6 @@ router.post("/range", async (req, res) => {
   res.json(orders);
 });
 
-// Delete Order
 router.delete("/:orderId", async (req, res) => {
   const { orderId } = req.params;
   try {
@@ -79,13 +73,12 @@ router.delete("/:orderId", async (req, res) => {
   }
 });
 
-// Fetch userid,name,email.....
-// Get user info (username + email) from latest order using userId
+
 router.get("/latest-order/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Find the latest order of the user
+   
     const latestOrder = await Order.findOne({ userId }).sort({ createdAt: -1 });
 
     if (!latestOrder) {
@@ -98,7 +91,6 @@ router.get("/latest-order/:userId", async (req, res) => {
   }
 });
 
-// *** New Route: Update payment status of an order ***
 router.put("/update-payment-status/:orderId", async (req, res) => {
   const { orderId } = req.params;
   const { paymentStatus, razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
@@ -112,7 +104,7 @@ router.put("/update-payment-status/:orderId", async (req, res) => {
         razorpayPaymentId,
         razorpaySignature,
       },
-      { new: true } // Return the updated document
+      { new: true } 
     );
 
     if (!updatedOrder) {

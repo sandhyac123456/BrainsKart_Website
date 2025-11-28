@@ -1,14 +1,15 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
- 
+ const API = import.meta.env.VITE_API_URL ;
+
 function Profile() {
   const [address, setAddress] = useState(null);
 
  const user = useSelector((state) => state.auth.user);
-   console.log("user is", user); 
+  //  console.log("user is", user); 
 
-   console.log("User image is", user?.image);
+  //  console.log("User image is", user?.image);
 
   
     if (!user) {
@@ -19,11 +20,9 @@ function Profile() {
       // console.log("user")
 
       const res = await axios.get(
-        `http://localhost:5000/api/orders/user-address-email/${user.email}`
+        `${API}/api/orders/user-address-email/${user.email}`
       );
-      // console.log("us")
-
-      // console.log(res.data);
+   
       setAddress(res.data);
     } catch (error) {
       console.error(
@@ -33,8 +32,7 @@ function Profile() {
     }
   };
   useEffect(() => {
-    // console.log("user",user)
-    // console.log("user email",user?.email)
+   
 
     if (user?.email) {
       fetchAddress();
@@ -228,3 +226,7 @@ function Profile() {
   );
 }
 export default Profile;
+
+
+
+

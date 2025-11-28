@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
+const API = import.meta.env.VITE_API_URL ;
 
 function loadRazorpayScript(src) {
 
@@ -21,7 +22,7 @@ function Payment() {
   const [userDetails, setUserDetails] = useState({});
   const [orderId, setOrderId] = useState(null);
   const navigate = useNavigate();
-      const user = useSelector((state) => state.auth.user); // auth slice ka naam hai to
+      const user = useSelector((state) => state.auth.user); 
   const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
   useEffect(() => {
@@ -31,7 +32,7 @@ function Payment() {
   const fetchUserDetails = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/orders/latest-order/${user._id}`
+        `${API}/api/orders/latest-order/${user._id}`
       );
       setUserDetails({
         username: res.data.address.username,
@@ -73,7 +74,7 @@ function Payment() {
 
     try {
       const result = await axios.post(
-        "http://localhost:5000/api/razorpay/create-order",
+        `${API}/api/razorpay/create-order`,
         {
           amount: grandTotal,
         }
@@ -92,7 +93,7 @@ function Payment() {
         handler: async (response) => {
           try {
             await axios.put(
-              `http://localhost:5000/api/orders/update-payment-status/${userDetails._id}`,
+              `${API}/api/orders/update-payment-status/${userDetails._id}`,
               {
                 paymentStatus: "Success",
                 razorpayOrderId: response.razorpay_order_id,
@@ -114,7 +115,7 @@ function Payment() {
           email: userDetails.email,
         },
         theme: {
-          color: "#2ecc71", // Green theme
+          color: "#2ecc71", 
         },
       };
 
@@ -170,7 +171,6 @@ function Payment() {
           Pay with Razorpay
         </button>
 
-        {/* ✅ Toast container added here */}
         <ToastContainer position="top-right" autoClose={2000} />
       </div>
     </div>

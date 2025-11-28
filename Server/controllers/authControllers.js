@@ -6,7 +6,6 @@ const fs = require("fs");
 const path = require("path");
 
 exports.forgotPassword = async (req, res) => {
-    //   console.log(" forgotPassword controller triggered");
 
   const { email } = req.body;
     console.log(" Email received:", email);
@@ -24,11 +23,11 @@ exports.forgotPassword = async (req, res) => {
   const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
 
   user.resetPasswordToken = resetPasswordToken;
-  user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 minutes
+  user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; 
 
   await user.save();
 
-  const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+  const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
   const message = `
     <p>Click the link to reset your password:</p>
     <a href="${resetUrl}">${resetUrl}</a>
@@ -57,7 +56,7 @@ exports.resetPassword = async (req, res) => {
   });
 
   if (!user) return res.status(400).json({ message: "Invalid or expired token" });
-console.log("Old hashed password:", user.password); // after finding user
+console.log("Old hashed password:", user.password);
 
 const hashedPassword = await bcrypt.hash(password, 10);
 user.password = hashedPassword;
@@ -83,17 +82,15 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "User already exists with this email." });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     let imageUrl = "";
 
-    // Agar image base64 format me aayi hai to usse uploads folder me save karo
     if (image && image.startsWith("data:image/")) {
       const matches = image.match(/^data:image\/([a-zA-Z]+);base64,(.+)$/);
       if (!matches) return res.status(400).json({ message: "Invalid image format" });
 
-      const ext = matches[1]; // jpg, png, etc.
+      const ext = matches[1];
       const base64Data = matches[2];
       const buffer = Buffer.from(base64Data, "base64");
 
@@ -102,11 +99,9 @@ exports.register = async (req, res) => {
 
       fs.writeFileSync(filePath, buffer);
 
-      // Server-side public URL
-      imageUrl = `http://localhost:5000/uploads/${fileName}`;
+      imageUrl = `${process.env.SERVER_URL}/uploads/${fileName}`;
     }
 
-    // Create user
     const user = new User({
       username,
       email,
@@ -129,7 +124,6 @@ exports.login = async (req, res) => {
   const { email, password  } = req.body;
 
   try {
-    console.log("🔐 Login attempt for:", email);
 
     const user = await User.findOne({ email });
 
@@ -145,7 +139,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    console.log(" Login successful for:", user.email);
+    // console.log(" Login successful for:", user.email);
 
     res.status(200).json({
       message: "Login successful",
@@ -153,7 +147,7 @@ exports.login = async (req, res) => {
         _id: user._id,
         username: user.username,
         email: user.email,
-        image: user.image,  // image add kar diya
+        image: user.image,  
 
       },
     });

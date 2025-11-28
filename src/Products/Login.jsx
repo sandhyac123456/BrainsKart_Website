@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../Redux/authSlice";
 import axios from "axios";
+const API = import.meta.env.VITE_API_URL;
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -44,19 +45,17 @@ function Login() {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
-        const res = await axios.post("http://localhost:5000/api/auth/login", {
+        const res = await axios.post(`${API}/api/auth/login`, {
           email: formData.email,
           password: formData.password,
         });
 
         const user = res.data.user;
-// Save the logged-in user data keyed by email
-localStorage.setItem(`user_${user.email}_data`, JSON.stringify(user));
+        localStorage.setItem(`user_${user.email}_data`, JSON.stringify(user));
 
-// Save the email of last logged in user for app initialization
-localStorage.setItem("lastLoggedInUserEmail", user.email);
+        localStorage.setItem("lastLoggedInUserEmail", user.email);
 
-dispatch(loginSuccess(user));
+        dispatch(loginSuccess(user));
 
         console.log("User logged in:", user);
 
@@ -115,9 +114,7 @@ dispatch(loginSuccess(user));
                 value={formData.password}
                 onChange={handleChange}
               />
-              <div
-                className={errors.password ? "text-danger" : "text-success"}
-              >
+              <div className={errors.password ? "text-danger" : "text-success"}>
                 {errors.password
                   ? errors.password
                   : formData.password && "Looks good"}

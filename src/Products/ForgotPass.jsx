@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Register.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+const API = import.meta.env.VITE_API_URL ;
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -14,8 +15,8 @@ function ForgotPassword() {
     setError("");
 
     try {
-const res = await axios.post("http://localhost:5000/api/auth/forgot-password", { email });
-      setMessage(res.data.message); // success message from backend
+const res = await axios.post(`${API}/api/auth/forgot-password`, { email });
+      setMessage(res.data.message); 
       console.log(res.data.message);
     } catch (err) {
       const errMsg = err.response?.data?.error || "Something went wrong";

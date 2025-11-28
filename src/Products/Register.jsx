@@ -3,6 +3,7 @@ import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 // import { loginSuccess } from "../Redux/authSlice.js";
+const API = import.meta.env.VITE_API_URL ;
 
 import axios from "axios";
 
@@ -93,35 +94,21 @@ const handleSubmit = async (e) => {
         image: formData.image || "https://via.placeholder.com/150",
       };
 
-      // Axios POST request to register user on backend
-      const response = await axios.post("http://localhost:5000/api/auth/register", payload);
+      const response = await axios.post(`${API}/api/auth/register`, payload);
 
-      // Prepare user object for redux + localStorage
       const user = {
-        _id: Date.now().toString(), // You can replace this with real _id from backend
+        _id: Date.now().toString(), 
         name: formData.username,
         email: formData.email,
         image: payload.image,
-        password: formData.password,
-        isLoggedIn: true, // Mark logged in on register (or keep false and ask user to login)
+        isLoggedIn: true, 
       };
 
-      // Save user data in localStorage with email-keyed storage
       localStorage.setItem(`user_${user.email}_data`, JSON.stringify(user));
       localStorage.setItem("lastLoggedInUserEmail", user.email);
 
-      // Dispatch loginSuccess with this user
-
-// dispatch(loginSuccess({
-//   _id: response.data._id,
-//   username: formData.username,
-//   email: formData.email,
-//   image: formData.image, // ✅ ADD THIS
-//   isLoggedIn: true,
-// }));
       alert("You're registered successfully! Please login.");
 
-      // Clear form
       setFormData({
         username: "",
         email: "",

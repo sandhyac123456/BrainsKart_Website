@@ -4,6 +4,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
+const API = import.meta.env.VITE_API_URL ;
 
 function CheckOut() {
   const [cartItems, setCartItems] = useState([]);
@@ -28,7 +29,7 @@ const user = useSelector((state) => state.auth.user);
 
   const fetchCart = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+      const res = await axios.get(`${API}/api/cart/${userId}`);
       setCartItems(res.data.items);
     } catch (error) {
       console.error("Error fetching cart:", error);
@@ -93,7 +94,7 @@ const user = useSelector((state) => state.auth.user);
     console.log(JSON.stringify(orderData).length);
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/orders`,
+        `${API}/api/orders`,
         orderData
       );
       sessionStorage.setItem("grandTotal", grandTotal);

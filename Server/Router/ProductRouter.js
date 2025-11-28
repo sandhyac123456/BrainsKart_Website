@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const ProductModel = require("../Model/Product.js");
 const Cart = require("../Model/Cart.js");
-// POST: Add Product
+
+
 router.post("/products", async (req, res) => {
   try {
     const product = new ProductModel(req.body);
@@ -14,7 +15,6 @@ router.post("/products", async (req, res) => {
   }
 });
 
-// GET: Products by Category
 router.get("/products/category/:category", async (req, res) => {
   try {
     const category = req.params.category;
@@ -25,7 +25,6 @@ router.get("/products/category/:category", async (req, res) => {
   }
 });
 
-// GET: Get single Products by id
 router.get("/products/id/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -36,7 +35,6 @@ router.get("/products/id/:id", async (req, res) => {
   }
 });
 
-// Update single products
 router.put("/products/:id", async (req, res) => {
   const { name, price, image } = req.body;
 

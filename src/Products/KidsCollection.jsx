@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import "./Register.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
+const API = import.meta.env.VITE_API_URL ;
 
 function KidsCollection() {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    let url = "http://localhost:5000/api/products/category/Kids";
+    let url = `${API}/api/products/category/Kids`;
     axios
       .get(url)
       .then((res) => {

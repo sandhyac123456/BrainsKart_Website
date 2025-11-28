@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Register.css";
+const API = import.meta.env.VITE_API_URL ;
 
 function CreateProduct() {
   const [formData, setFormData] = useState({
@@ -11,7 +12,6 @@ function CreateProduct() {
     category: "",
   });
 
-  // updateImage
   let updateImage = async (event) => {
     let imageFile = event.target.files[0];
     let base64Image = await convertBase64String(imageFile);
@@ -35,7 +35,7 @@ function CreateProduct() {
     });
   };
   const navigate = useNavigate();
-  const { category } = useParams(); // Get category from URL ( "men", "women", "kids")
+  const { category } = useParams(); 
 
   useEffect(() => {
     if (category) {
@@ -56,10 +56,9 @@ function CreateProduct() {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/api/products", formData);
+      await axios.post(`${API}/api/products`, formData);
       alert("Product added successfully!");
 
-      // Navigate based on selected category
       const lower = formData.category.toLowerCase();
       if (lower === "men") navigate("/mens");
       else if (lower === "women") navigate("/womens");

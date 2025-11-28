@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Register.css";
 import axios from "axios";
+const API = import.meta.env.VITE_API_URL ;
 
 function UpdateProduct() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ function UpdateProduct() {
   const fetchProduct = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/products/id/${id}`
+        `${API}/api/products/id/${id}`
       );
       setData(res.data);
       console.log(res.data);
@@ -63,7 +64,7 @@ function UpdateProduct() {
     e.preventDefault();
     console.log("data", Data);
     try {
-      await axios.put(`http://localhost:5000/api/products/${id}`, Data);
+      await axios.put(`${API}/api/products/${id}`, Data);
       alert("Product updated successfully!");
       navigate("/cart");
     } catch (error) {

@@ -5,6 +5,7 @@ import "./Register.css";
 import { useCart } from "../context/CartContext.jsx";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+const API = import.meta.env.VITE_API_URL ;
 
 function Item() {
   const { id } = useParams();
@@ -16,10 +17,10 @@ const user = useSelector((state) => state.auth.user);
   // const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
 
-  //  Product fetch karna
+
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/products/id/${id}`)
+      .get(`${API}/api/products/id/${id}`)
       .then((res) => {
         setProduct(res.data);
       })
@@ -28,12 +29,10 @@ const user = useSelector((state) => state.auth.user);
       });
   }, [id]);
 
-  //  Quantity select change
   const handleQtyChange = (e) => {
     setSelectedQty(Number(e.target.value));
   };
 
-  //  Add to Cart function
   const handleAddToCart = async () => {
     try {
       if (!user || !user._id) {
@@ -48,14 +47,14 @@ const user = useSelector((state) => state.auth.user);
         price:product.price,
         quantity: selectedQtyd,
       };
-      const res = await axios.post("http://localhost:5000/api/cart", cartData);
+      const res = await axios.post(`${API}/api/cart`, cartData);
       if (res.data.already) {
         alert("Product already in cart");
-        navigate("/cart"); // Redirect to cart if product already exists
+        navigate("/cart"); 
       } else if (res.status === 200 || res.status === 201) {
         alert("Product added to cart!");
-        navigate("/cart"); // Redirect to cart after adding product
-        setCartCount((prev) => prev + 1); // Cart icon count update
+        navigate("/cart"); 
+        setCartCount((prev) => prev + 1); 
       }
     } catch (err) {
       console.error("Failed to add to cart:", err.response.data || err.message);
@@ -123,7 +122,6 @@ const user = useSelector((state) => state.auth.user);
                 </select>
               </div>
               <div style={{ marginTop: "15px" }}>
-                {/* <Link to="/cart"> */}
                 <button
                   className="create-btn16"
                   onClick={handleAddToCart}
@@ -131,7 +129,6 @@ const user = useSelector((state) => state.auth.user);
                 >
                   Add to Cart
                 </button>
-                {/* </Link> */}
               </div>
 
               <p style={{ marginTop: "20px", width: "600px" }}>

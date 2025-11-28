@@ -41,7 +41,7 @@
 
 .navbar-brand {
     display: flex;
-    align-items: center; /* Center vertically */
+    align-items: center; 
     height: 100%;
 }
 .HomePara {

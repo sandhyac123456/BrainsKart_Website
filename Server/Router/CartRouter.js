@@ -1,10 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const Cart = require("../Model/Cart"); // ye ab CartItem hai
+const Cart = require("../Model/Cart");
 const Product = require("../Model/Product");
 const { route } = require("./ProductRouter");
 
-// Add or update one cart item (ek document)
 router.post("/", async (req, res) => {
   const { userId, productId, quantity } = req.body;
  
@@ -36,7 +35,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Get all cart items for one user
 router.get("/:userId", async (req, res) => {
   try {
     const cartItems = await Cart.find({ userId: req.params.userId }).populate(
@@ -57,7 +55,6 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-// Delete one cart item
 router.delete("/:userId/:productId", async (req, res) => {
   const { userId, productId } = req.params;
   try {
@@ -68,7 +65,6 @@ router.delete("/:userId/:productId", async (req, res) => {
   }
 });
 
-//update all cart item in db
 router.put("/:userId/:productId", async (req, res) => {
   const { userId, productId } = req.params;
   const { quantity} = req.body;
@@ -86,8 +82,4 @@ router.put("/:userId/:productId", async (req, res) => {
     res.status(500).json({ error: "Failed to update cart Item" });
   }
 });
-
-
-
-
 module.exports = router;

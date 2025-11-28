@@ -1,6 +1,6 @@
 const nodemailer = require("nodemailer");
-console.log("USER:", process.env.MAILTRAP_USER);
-console.log("PASS:", process.env.MAILTRAP_PASS);
+// console.log("USER:", process.env.MAILTRAP_USER);
+// console.log("PASS:", process.env.MAILTRAP_PASS);
 
 const sendEmail = async (options) => {
   const transporter = nodemailer.createTransport({

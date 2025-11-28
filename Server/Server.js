@@ -2,27 +2,35 @@ const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const useRouter = require("./Router/ProductRouter")
-const CartRouter = require("./Router/CartRouter")
-const OrderRouter = require("./Router/OrderRouter")
-const PaymentRouter = require("./Router/PaymentRouter")
-const authRoutes = require("./Router/authRoutes");
 const path = require("path");
-
-const cors = require('cors')
-
-dotenv.config({
-  path: "./.env",
-});
-
-app.use(cors());
-// app.use(express.json());
+const cors = require("cors");
+dotenv.config();
+const useRouter = require("./Router/ProductRouter");
+const CartRouter = require("./Router/CartRouter");
+const OrderRouter = require("./Router/OrderRouter");
+const PaymentRouter = require("./Router/PaymentRouter");
+const authRoutes = require("./Router/authRoutes");
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "*",
+  })
+);
 app.use(express.json({ limit: "1mb" }));
 
-let Hostname = process.env.Hostname;
-let Port = process.env.Port ;
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-mongoose.connect(process.env.MongoDB_URL)
+app.use("/api", useRouter);
+
+app.use("/api/cart", CartRouter);
+
+app.use("/api/orders", OrderRouter);
+
+app.use("/api/razorpay", PaymentRouter);
+
+app.use("/api/auth", authRoutes);
+
+mongoose
+  .connect(process.env.MONGODB_URL)
   .then(() => {
     console.log("mongoDb connection successfully !");
   })
@@ -30,21 +38,10 @@ mongoose.connect(process.env.MongoDB_URL)
     console.log("mongoDb connection faild !");
   });
 
-// use Products routers ....
-  app.use("/api",useRouter)
+let HOSTNAME = process.env.HOSTNAME;
+let PORT = process.env.PORT;
 
-// use Cart routers ....
- app.use("/api/cart",CartRouter)
-
-// use Order routers ....
- app.use("/api/orders",OrderRouter)
-
- app.use("/api/razorpay",PaymentRouter)
-
- app.use("/api/auth", authRoutes);
-
- app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-app.listen(Port, Hostname, () => {
-  console.log(`Server is listening on port http://${Hostname}:${Port}`);
+app.listen(PORT, HOSTNAME, () => {
+  console.log(`Server is listening on port http://${HOSTNAME}:${PORT}`);
 });
+

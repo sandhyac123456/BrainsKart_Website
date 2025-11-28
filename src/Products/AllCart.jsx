@@ -4,6 +4,8 @@ import "./Register.css";
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+const API = import.meta.env.VITE_API_URL ;
+
 
 const AllCart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -20,7 +22,7 @@ const userId = user?._id;
   const fetchCart = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/api/cart/${userId}`);
+      const res = await axios.get(`${API}/api/cart/${userId}`);
       setCartItems(res.data.items);
       setCartCount(res.data.items.length);
     } catch (error) {
@@ -33,7 +35,7 @@ const userId = user?._id;
   const handleDelete = async (productId) => {
     try {
       await axios.delete(
-        `http://localhost:5000/api/cart/${userId}/${productId}`
+        `${API}/api/cart/${userId}/${productId}`
       );
       fetchCart();
       alert("Item deleted from cart!");
@@ -44,7 +46,7 @@ const userId = user?._id;
   const updateQtyOnly = async (productId, quantity) => {
     console.log("update",quantity)
     try {
-      await axios.put(`http://localhost:5000/api/cart/${userId}/${productId}`, {
+      await axios.put(`${API}/api/cart/${userId}/${productId}`, {
         productId,
         quantity,
     
@@ -70,23 +72,6 @@ const userId = user?._id;
       await updateQtyOnly(productId, newQty);
     }
   };
-
-  // const updateFullItem =  async (productId, quantity ,name,price) => {
-  //   console.log("update",productId,quantity,name,price)
-  //   try {
-  //     await axios.put(`http://localhost:5000/api/cart/${userId}/${productId}`, {
-  //       productId,
-  //       quantity,
-  //      name,
-  //      price,
-  //     });
-  //     fetchCart();
-
-  //   } catch (error) {
-  //     console.error("Error updating quantity:", error);
-  //   }
-  // };
-
   useEffect(() => {
     if (userId) {
       fetchCart();
@@ -186,7 +171,6 @@ const userId = user?._id;
                   <div style={{ width: "100px" }}>Action</div>
                 </div>
 
-                {/* Cart Items */}
                 {cartItems.map((item) => (
                   <div
                     key={item.productId}
