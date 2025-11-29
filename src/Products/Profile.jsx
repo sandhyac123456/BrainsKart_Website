@@ -60,7 +60,7 @@ function Profile() {
         >
           <div>
             <img
-              src={user?.image|| "https://via.placeholder.com/150"}
+             src={`${API}/uploads/${user.image}`}
               alt="Profile"
               style={{
                 width: "200px",
