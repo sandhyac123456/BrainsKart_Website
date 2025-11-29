@@ -210,6 +210,18 @@
 .create-btn15:hover {
   background: linear-gradient(to right, #137513, #57d657);
 }
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.icon-btn:focus {
+  outline: none;
+}
 /* ..........................Success.jsx............................................... */
 
 .success-container {

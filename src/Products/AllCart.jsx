@@ -1,11 +1,10 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Register.css";
 import { useCart } from "../context/CartContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-const API = import.meta.env.VITE_API_URL ;
-
+const API = import.meta.env.VITE_API_URL;
 
 const AllCart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -14,8 +13,8 @@ const AllCart = () => {
   const [tax, setTax] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
   const { setCartCount } = useCart();
-const user = useSelector((state) => state.auth.user);
-const userId = user?._id;
+  const user = useSelector((state) => state.auth.user);
+  const userId = user?._id;
 
   const navigate = useNavigate();
 
@@ -34,9 +33,7 @@ const userId = user?._id;
 
   const handleDelete = async (productId) => {
     try {
-      await axios.delete(
-        `${API}/api/cart/${userId}/${productId}`
-      );
+      await axios.delete(`${API}/api/cart/${userId}/${productId}`);
       fetchCart();
       alert("Item deleted from cart!");
     } catch (error) {
@@ -44,12 +41,11 @@ const userId = user?._id;
     }
   };
   const updateQtyOnly = async (productId, quantity) => {
-    console.log("update",quantity)
+    // console.log("update",quantity)
     try {
       await axios.put(`${API}/api/cart/${userId}/${productId}`, {
         productId,
         quantity,
-    
       });
       fetchCart();
     } catch (error) {
@@ -57,17 +53,19 @@ const userId = user?._id;
     }
   };
 
-  const incQty = async (e,productId) => {
+  const incQty = async (e, productId) => {
     e.preventDefault();
+    e.stopPropagation();
     const item = cartItems.find((item) => item.productId === productId);
     if (item) {
       const newQty = item.quantity + 1;
-      await updateQtyOnly(productId, newQty) ;
+      await updateQtyOnly(productId, newQty);
     }
   };
 
-  const decQty = async (e,productId) => {
+  const decQty = async (e, productId) => {
     e.preventDefault();
+    e.stopPropagation();
     const item = cartItems.find((item) => item.productId === productId);
     if (item && item.quantity > 1) {
       const newQty = item.quantity - 1;
@@ -191,7 +189,26 @@ const userId = user?._id;
                     <div style={{ width: "90px" }}>{item.name}</div>
 
                     <div style={{ width: "60px" }}>
-                      <i
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={(e) => decQty(e, item.productId)}
+                        aria-label="decrease quantity"
+                      >
+                        <i className="fa-solid fa-circle-minus" />
+                      </button>
+
+                      <span style={{ margin: "0 8px" }}>{item.quantity}</span>
+
+                      <button
+                        type="button"
+                        className="icon-btn"
+                        onClick={(e) => incQty(e, item.productId)}
+                        aria-label="increase quantity"
+                      >
+                        <i className="fa-solid fa-circle-plus" />
+                      </button>
+                      {/* <i
                         className="fa-solid fa-circle-minus"
                         onClick={(e) => decQty(e,item.productId)}
                       />
@@ -199,20 +216,28 @@ const userId = user?._id;
                       <i
                         className="fa-solid fa-circle-plus"
                         onClick={(e) => incQty(e,item.productId)}
-                      />
+                      /> */}
                     </div>
                     <div style={{ width: "80px" }}>₹{item.price}</div>
-                    <div style={{ width: "150px" ,display:"flex", gap:"10px"}}>
-                       <button className="delete-btn" type="button" onClick={()=>{navigate(`/update/${item.productId}`)}}>
-                         UPDATE
+                    <div
+                      style={{ width: "150px", display: "flex", gap: "10px" }}
+                    >
+                      <button
+                        className="delete-btn"
+                        type="button"
+                        onClick={() => {
+                          navigate(`/update/${item.productId}`);
+                        }}
+                      >
+                        UPDATE
                       </button>
                       <button
+                      type="button"
                         className="delete-btn"
                         onClick={() => handleDelete(item.productId)}
                       >
                         DELETE
                       </button>
-                     
                     </div>
                   </div>
                 ))}
