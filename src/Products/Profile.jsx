@@ -64,7 +64,7 @@ function Profile() {
         >
           <div>
             <img
-             src={`${API}/uploads/${user.image}`}
+             src={user.image}
               alt="Profile"
               style={{
                 width: "200px",
