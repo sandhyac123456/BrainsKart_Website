@@ -20,7 +20,7 @@ function Profile() {
       // console.log("user")
 
       const res = await axios.get(
-        `${API}/api/orders/user-address-email/${user.email}`
+        `${API}/api/orders/user-address-email/${encodeURIComponent(user.email)}`
       );
    
       setAddress(res.data);
