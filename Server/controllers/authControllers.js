@@ -115,7 +115,6 @@ console.log(" Password reset successful for:", user.email);
 //     res.status(500).json({ message: "Server error" });
 //   }
 // };
-const cloudinary = require("../config/cloudinary"); 
 
 // exports.register = async (req, res) => {
 //   const { username, email, password, image } = req.body;
