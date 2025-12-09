@@ -11,8 +11,6 @@ function Navbar() {
   let navigate = useNavigate();
   // let [user, setUser] = useState(null);
   const user = useSelector((state) => state.auth.user);
-  //   console.log("User object in Navbar:", user);
-  // console.log("User image in Navbar:", user?.image);
   const dispatch = useDispatch();
   const { cartCount, setCartCount } = useCart();
 
