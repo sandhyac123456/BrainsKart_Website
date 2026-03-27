@@ -46,6 +46,6 @@ let HOSTNAME = process.env.HOSTNAME;
 let PORT = process.env.PORT;
 
 app.listen(PORT, HOSTNAME, () => {
-  console.log(`Server is listening on port http://${HOSTNAME}:${PORT}`);
+  console.log(`Server is listening on port ${PORT}`);
 });
 

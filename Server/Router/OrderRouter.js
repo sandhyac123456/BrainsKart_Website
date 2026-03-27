@@ -29,10 +29,13 @@ router.get("/user-address-email/:email", async (req, res) => {
 });
 
 router.get("/", async (req, res) => {
-  const orders = await Order.find().sort({
-    createdAt: 1,
-  });
-  res.json(orders);
+  try {
+    const orders = await Order.find().sort({ _id: -1 });
+    res.json(orders);
+  } catch (error) {
+    console.log("ERROR:", error); 
+    res.status(500).json({ message: "Failed to fetch orders" });
+  }
 });
 
 router.get("/today", async (req, res) => {
