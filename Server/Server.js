@@ -12,7 +12,8 @@ const PaymentRouter = require("./Router/PaymentRouter");
 const authRoutes = require("./Router/authRoutes");
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "*",
+    origin: process.env.CLIENT_URL,
+    credentials: true,
   })
 );
 app.use(express.json({ limit: "10mb" }));
@@ -42,10 +43,9 @@ mongoose
     console.log("mongoDb connection faild !");
   });
 
-let HOSTNAME = process.env.HOSTNAME;
-let PORT = process.env.PORT;
+let PORT = process.env.PORT||5000;
 
-app.listen(PORT, HOSTNAME, () => {
+app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
 
