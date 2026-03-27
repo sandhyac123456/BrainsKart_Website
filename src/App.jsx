@@ -24,7 +24,6 @@ import OrderHistory from "./Products/OrderHistory.jsx";
 import ForgotPassword from "./Products/ForgotPass.jsx";
 import ResetPassword from "./Products/ResetPass.jsx";
 
-
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
