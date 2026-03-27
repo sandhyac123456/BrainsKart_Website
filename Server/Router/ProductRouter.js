@@ -18,7 +18,9 @@ router.post("/products", async (req, res) => {
 router.get("/products/category/:category", async (req, res) => {
   try {
     const category = req.params.category;
-    const products = await ProductModel.find({ category });
+const products = await ProductModel.find({
+  category: { $regex: new RegExp(`^${category}$`, "i") }
+});
     res.status(200).json(products);
   } catch (error) {
     res.status(500).send({ error: "Error fetching products" });
