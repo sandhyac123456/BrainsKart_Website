@@ -12,7 +12,7 @@ const PaymentRouter = require("./Router/PaymentRouter");
 const authRoutes = require("./Router/authRoutes");
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: ["https://branskart-website-1.onrender.com", "http://localhost:5173"],
     credentials: true,
   })
 );

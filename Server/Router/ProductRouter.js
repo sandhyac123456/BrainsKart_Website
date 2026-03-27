@@ -23,6 +23,7 @@ const products = await ProductModel.find({
 });
     res.status(200).json(products);
   } catch (error) {
+    console.log("error:", error);
     res.status(500).send({ error: "Error fetching products" });
   }
 });
