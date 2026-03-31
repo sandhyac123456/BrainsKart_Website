@@ -102,9 +102,11 @@ console.log("API Response:", res.data); // 🔥 important
           {/* FILTER */}
           <button
             onClick={() => { setShowDatePicker(!showDatePicker); setView("range"); }}
-            className="px-6 py-2 rounded-full text-sm font-semibold 
-            bg-gradient-to-r from-sky-400 to-blue-500 text-white 
-            hover:scale-105 hover:shadow-lg transition duration-300"
+            className={`px-6 py-2 rounded-full text-sm font-semibold transition duration-300
+              ${view === "filter"
+                ? "bg-gradient-to-r from-[#2f6fed] to-[#4f8dfd] text-white shadow-lg scale-105"
+                : "bg-white text-gray-700 border hover:bg-gray-100 hover:scale-105"
+              }`}
           >
             Filter
           </button>
