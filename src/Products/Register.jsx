@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
