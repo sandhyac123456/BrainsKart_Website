@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-// import { loginSuccess } from "../Redux/authSlice.js";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const API = import.meta.env.VITE_API_URL ;
 
 import axios from "axios";
@@ -54,7 +55,7 @@ function Register() {
   const validate = () => {
     const newErrors = {};
 
-    const usernameRegex = /^[a-zA-Z0-9_.]+$/;
+    const usernameRegex = /^[a-zA-Z0-9_. ]+$/;
     if (!usernameRegex.test(formData.username)) {
       newErrors.username = "Please enter a valid username.";
     }
@@ -105,7 +106,7 @@ const handleSubmit = async (e) => {
       localStorage.setItem(`user_${user.email}_data`, JSON.stringify(user));
       localStorage.setItem("lastLoggedInUserEmail", user.email);
 
-      alert("You're registered successfully! Please login.");
+      toast.success("You're registered successfully! Please login.");
 
       setFormData({
         username: "",
@@ -119,148 +120,135 @@ const handleSubmit = async (e) => {
 
     } catch (error) {
       if (error.response) {
-        alert(error.response.data.message || "Registration failed. Try again.");
+        toast.error(error.response.data.message || "Registration failed. Try again.");
       } else {
-        alert("Network error: " + error.message);
+        toast.error("Network error: " + error.message);
       }
     }
   }
 };
-
-
-
-
-
   return (
-    <>
-      <div className="head">
-        <div className="text">
-          <i className="fas fa-user-plus"></i>
-          <span style={{ marginLeft: "8px", fontWeight: "bold" }}>
-            Register Here
-          </span>
+  <div className="min-h-screen bg-gradient-to-br from-[#f5f3f0] to-[#e9e4dc] flex flex-col">
+<ToastContainer position="top-right" theme="colored" autoClose={2000} />
+    {/* HEADER */}
+    <div className="bg-gradient-to-r from-[#a86a2b] to-[#c99b64] py-3 shadow-md">
+      <h2 className="text-center text-2xl font-bold text-white tracking-wide">
+        Register Here
+      </h2>
+    </div>
+
+    {/* FORM */}
+    <div className="flex flex-1 justify-center items-center p-4">
+      
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+
+        {/* TOP */}
+        <div className="bg-gradient-to-r from-[#030f03] via-[#155715] to-[#204620] py-3">
+          <h3 className="text-center text-lg font-semibold text-[#f3c894]">
+            Create Account
+          </h3>
         </div>
-      </div>
 
-      <div className="container mt-3 form-wrapper">
-        <div className="row" style={{ width: "330px" }}>
-          <h3 className="heading">Register</h3>
-          <form className="form-box" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <input
-                type="text"
-                id="username"
-                placeholder="Username"
-                className={`form-control ${
-                  errors.username
-                    ? "is-invalid"
-                    : formData.username && "is-valid"
-                }`}
-                value={formData.username}
-                onChange={handleChange}
-              />
-              <div className={errors.username ? "text-danger" : "text-success"}>
-                {errors.username
-                  ? errors.username
-                  : formData.username && "Looks good"}
-              </div>
-            </div>
+        {/* FORM BODY */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
 
-            <div className="form-group mt-1">
-              <input
-                type="email"
-                id="email"
-                placeholder="Email"
-                className={`form-control ${
-                  errors.email ? "is-invalid" : formData.email && "is-valid"
-                }`}
-                value={formData.email}
-                onChange={handleChange}
-              />
-              <div className={errors.email ? "text-danger" : "text-success"}>
-                {errors.email ? errors.email : formData.email && "Looks good"}
-              </div>
-            </div>
-
-            <div className="form-group mt-1">
-                <div className="custom-file">
-                  <input
-                    type="file"
-                    name="image"
-                    onChange={updateImage}
-                    className="custom-file-input form-control"
-                    id="inputGroupFile01"
-                    
-                  />
-                </div>
-            </div>
-
-            <div className="form-group mt-1">
-              <input
-                type="password"
-                id="password"
-                placeholder="Password"
-                className={`form-control ${
-                  errors.password
-                    ? "is-invalid"
-                    : formData.password && "is-valid"
-                }`}
-                value={formData.password}
-                onChange={handleChange}
-              />
-              <div className={errors.password ? "text-danger" : "text-success"}>
-                {errors.password
-                  ? errors.password
-                  : formData.password && "Looks good"}
-              </div>
-            </div>
-
-            <div className="form-group mt-1">
-              <input
-                type="password"
-                id="c_password"
-                placeholder="Confirm Password"
-                className={`form-control ${
-                  errors.c_password
-                    ? "is-invalid"
-                    : formData.c_password && "is-valid"
-                }`}
-                value={formData.c_password}
-                onChange={handleChange}
-              />
-              <div
-                className={errors.c_password ? "text-danger" : "text-success"}
-              >
-                {errors.c_password
-                  ? errors.c_password
-                  : formData.c_password && "Looks good"}
-              </div>
-            </div>
-
-            <div className="form-group mt-2">
-              <input type="submit" value="Register" className="create-btn1" />
-            </div>
-            <p
-              style={{ marginTop: "0", marginBottom: "0", fontWeight: "bold" }}
-            >
-              Have an account?{" "}
-              <Link
-                className="nav-link d-inline text-primary"
-                style={{ fontWeight: "bold" }}
-                to="/login"
-              >
-                Login
-              </Link>
+          {/* USERNAME */}
+          <div>
+            <input
+              type="text"
+              id="username"
+              placeholder="Username"
+              value={formData.username}
+              onChange={handleChange}
+              className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#a86a2b]
+                ${errors.username ? "border-red-500" : "border-gray-300"}`}
+            />
+            <p className={`text-sm mt-1 ${errors.username ? "text-red-500" : "text-green-600"}`}>
+              {errors.username ? errors.username : formData.username && "Looks good"}
             </p>
-          </form>
-          <h4 className="heading" style={{ textAlign: "center" }}>
-            {" "}
-            <span className="logo1">BRAINSKART</span>
-          </h4>
-        </div>
+          </div>
+
+          {/* EMAIL */}
+          <div>
+            <input
+              type="email"
+              id="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#a86a2b]
+                ${errors.email ? "border-red-500" : "border-gray-300"}`}
+            />
+            <p className={`text-sm mt-1 ${errors.email ? "text-red-500" : "text-green-600"}`}>
+              {errors.email ? errors.email : formData.email && "Looks good"}
+            </p>
+          </div>
+
+          {/* IMAGE */}
+          <div>
+            <input
+              type="file"
+              onChange={updateImage}
+              className="w-full border rounded-md px-3 py-2 bg-white"
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div>
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={handleChange}
+              className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#a86a2b]
+                ${errors.password ? "border-red-500" : "border-gray-300"}`}
+            />
+            <p className={`text-sm mt-1 ${errors.password ? "text-red-500" : "text-green-600"}`}>
+              {errors.password ? errors.password : formData.password && "Looks good"}
+            </p>
+          </div>
+
+          {/* CONFIRM PASSWORD */}
+          <div>
+            <input
+              type="password"
+              id="c_password"
+              placeholder="Confirm Password"
+              value={formData.c_password}
+              onChange={handleChange}
+              className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#a86a2b]
+                ${errors.c_password ? "border-red-500" : "border-gray-300"}`}
+            />
+            <p className={`text-sm mt-1 ${errors.c_password ? "text-red-500" : "text-green-600"}`}>
+              {errors.c_password ? errors.c_password : formData.c_password && "Looks good"}
+            </p>
+          </div>
+
+          {/* BUTTON */}
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-[#030f03] via-[#155715] to-[#204620] text-[#f3c894] py-2 rounded-lg font-semibold hover:scale-105 transition"
+          >
+            Register
+          </button>
+
+          {/* LOGIN LINK */}
+          <p className="text-center text-sm font-medium">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-600 hover:underline">
+              Login
+            </Link>
+          </p>
+
+        </form>
+
       </div>
-    </>
-  );
+
+    </div>
+
+  </div>
+);
 }
 
 export default Register;

@@ -53,14 +53,35 @@ router.get("/today", async (req, res) => {
 });
 
 router.post("/range", async (req, res) => {
-  const { startDate, endDate } = req.body;
-  const orders = await Order.find({
-    createdAt: {
-      $gte: new Date(startDate),
-      $lte: new Date(endDate),
-    },
-  });
-  res.json(orders);
+  try {
+    const { startDate, endDate } = req.body;
+
+    console.log("Received StartDate:", startDate);
+    console.log("Received EndDate:", endDate);
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(23, 59, 59, 999);
+
+    console.log("Converted Start:", start);
+    console.log("Converted End:", end);
+
+    const orders = await Order.find({
+      createdAt: {
+        $gte: start,
+        $lte: end,
+      },
+    });
+
+    console.log("Orders Found:", orders); // 🔥 सबसे important
+
+    res.json(orders);
+  } catch (error) {
+    console.error("Backend Error:", error);
+    res.status(500).json({ error: "Failed to fetch orders" });
+  }
 });
 
 router.delete("/:orderId", async (req, res) => {

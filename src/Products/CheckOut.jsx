@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import "./Register.css";
 import axios from "axios";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const API = import.meta.env.VITE_API_URL ;
 
 function CheckOut() {
@@ -99,326 +100,166 @@ const user = useSelector((state) => state.auth.user);
       );
       sessionStorage.setItem("grandTotal", grandTotal);
 
-      alert("Order placed successfully!");
+      toast.success("Order placed successfully!");
       navigate("/payment");
     } catch (error) {
       console.error("Error placing order:", error);
-      alert("Order failed. Please try again.");
+      toast.error("Order failed. Please try again.");
     }
   };
 
   useEffect(()=>{
     sessionStorage.removeItem("grandTotal");
   },[])
+
   return (
-    <>
-      <div className="head">
-        <div className="text">
-          <i className="fa-solid fa-cash-register"></i>{" "}
-          <span style={{ marginLeft: "8px", fontWeight: "bold" }}>
-            CheckOut Items
-          </span>
+  <div className="overflow-y-auto bg-gradient-to-br from-[#f5f3f0] to-[#e9e4dc]">
+   <ToastContainer position="top-right" theme="colored" autoClose={2000}/>
+  
+    {/* HEADER */}
+    <div className="bg-gradient-to-r from-[#a86a2b] to-[#c99b64] py-3 shadow-md">
+      <h2 className="text-center text-2xl font-bold text-white">
+        Checkout Items
+      </h2>
+    </div>
+
+    {/* MAIN */}
+    <div className="max-w-7xl mx-auto p-4 grid lg:grid-cols-3 gap-6 items-start">
+
+      {/* LEFT SIDE (FORM) */}
+      <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg p-5">
+
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Shipping Details
+        </h3>
+
+        <div className="grid md:grid-cols-2 gap-4">
+
+          <input value={username} onChange={(e)=>setUsername(e.target.value)} placeholder="Username"
+            className="border p-2 rounded-md focus:ring-2 focus:ring-[#a86a2b]" />
+
+          <input value={phone} onChange={(e)=>setPhone(e.target.value)} placeholder="Phone"
+            className="border p-2 rounded-md focus:ring-2 focus:ring-[#a86a2b]" />
+
+          <input value={hno} onChange={(e)=>setHno(e.target.value)} placeholder="House No"
+            className="border p-2 rounded-md" />
+
+          <input value={street} onChange={(e)=>setStreet(e.target.value)} placeholder="Street"
+            className="border p-2 rounded-md" />
+
+          <input value={landmark} onChange={(e)=>setLandmark(e.target.value)} placeholder="Landmark"
+            className="border p-2 rounded-md" />
+
+          <input value={city} onChange={(e)=>setCity(e.target.value)} placeholder="City"
+            className="border p-2 rounded-md" />
+
+          <input value={state} onChange={(e)=>setState(e.target.value)} placeholder="State"
+            className="border p-2 rounded-md" />
+
+          <input value={country} onChange={(e)=>setCountry(e.target.value)} placeholder="Country"
+            className="border p-2 rounded-md" />
+
+          <input value={pincode} onChange={(e)=>setPincode(e.target.value)} placeholder="Pincode"
+            className="border p-2 rounded-md md:col-span-2" />
+
         </div>
+
+        {/* PAYMENT */}
+        <h3 className="text-lg font-semibold mt-6 mb-3 border-b pb-2">
+          Payment Method
+        </h3>
+
+        <div className="space-y-2">
+
+         <label className="flex items-center gap-2 cursor-pointer">
+  <input
+    type="radio"
+    name="payment"
+    value="Cash on Delivery"
+    checked={selectedPaymentMethod === "Cash on Delivery"}
+    onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+  />
+  Cash on Delivery
+</label>
+
+<label className="flex items-center gap-2 cursor-pointer">
+  <input
+    type="radio"
+    name="payment"
+    value="Online"
+    checked={selectedPaymentMethod === "Online"}
+    onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+  />
+  Credit / Debit Card
+</label>
+
+        </div>
+
       </div>
 
-      <div
-        className="cart-container"
-        style={{
-          display: "flex",
-          alignItems: "flex-start",
-          marginTop: "10px",
-          padding: "30px",
-          flexWrap: "wrap",
-        }}
-      >
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: "750px",
-            marginRight: "auto",
-          }}
-        >
-          <div
-            style={{
-              padding: "10px",
-              background:
-                "linear-gradient(to right, #030F03 0%, #155715 50%,rgb(32, 70, 32) 100%)",
-            }}
-          >
-            <h3 style={{ color: "rgb(243, 200, 148)" }}>Your Cart Items</h3>
-          </div>
-          <div
-            style={{
-              background: "white",
-              padding: "20px",
-              boxShadow: " rgba(0, 0, 0, 0.1) 0px 4px 12px",
-            }}
-          >
-            <div
-              style={{
-                fontWeight: "bold",
-                background: "rgb(243, 200, 148)",
-                padding: "10px",
-              }}
-            >
-              <form>
-                <div
-                  className="form-group"
-                  style={{ outline: "none", boxShadow: "none" }}
-                >
-                 <input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Username"
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group mt-1">
-                  <input
-                    type="text"
-                    value={hno}
-                    onChange={(e) => setHno(e.target.value)}
-                    placeholder="House Number"
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group mt-1">
-                  <input
-                    type="text"
-                    value={street}
-                    onChange={(e) => setStreet(e.target.value)}
-                    placeholder="Street"
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group mt-1">
-                  <input
-                    type="text"
-                    value={landmark}
-                    onChange={(e) => setLandmark(e.target.value)}
-                    placeholder="Landmark"
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group mt-1">
-                  <input
-                    type="text"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    placeholder="City"
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group mt-1">
-                  <input
-                    type="text"
-                    value={state}
-                    onChange={(e) => setState(e.target.value)}
-                    placeholder="State"
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group mt-1">
-                  <input
-                    type="text"
-                    value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                    placeholder="Country"
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group mt-1">
-                  <input
-                    type="number"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
-                    placeholder="Pincode"
-                    className="form-control"
-                  />
-                </div>
-                <div className="form-group mt-1">
-                  <input
-                    type="number"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Phone Number"
-                    className="form-control"
-                  />
-                </div>
-              </form>
+      {/* RIGHT SIDE (SUMMARY) */}
+      <div className="bg-white rounded-2xl shadow-lg p-5 lg:sticky lg:top-5">
+
+        <h3 className="text-lg font-semibold mb-4 border-b pb-2">
+          Order Summary
+        </h3>
+
+        {/* ITEMS */}
+        <div className="space-y-3 max-h-[300px] overflow-y-auto">
+
+          {cartItems.map((item) => (
+            <div key={item.productId} className="flex gap-3 items-center border-b pb-2">
+
+              <img src={item.image}
+                className="w-14 h-14 object-cover rounded-md border" />
+
+              <div className="flex-1 text-sm">
+                <p className="font-medium">{item.name}</p>
+                <p className="text-gray-500">Qty: {item.quantity}</p>
+              </div>
+
+              <div className="font-semibold text-sm">
+                ₹{item.price * item.quantity}
+              </div>
+
             </div>
-          </div>
-          <div
-            style={{
-              padding: "10px",
-              background:
-                "linear-gradient(to right, #030F03 0%, #155715 50%,rgb(32, 70, 32) 100%)",
-            }}
-          >
-            <h3 style={{ color: "rgb(243, 200, 148)" }}>Payment Details</h3>
-          </div>
-          <div
-            style={{
-              background: "white",
-              padding: "20px",
-              boxShadow: " rgba(0, 0, 0, 0.1) 0px 12px 12px",
-            }}
-          >
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                value="Cash on Delivery"
-                onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                name="flexRadioDefault"
-                id="flexRadioDefault1"
-              />
-              <label class="form-check-label" htmlFor="flexRadioDefault1">
-                Cash on Delivery
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                value="Online"
-                onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                name="flexRadioDefault"
-                id="flexRadioDefault2"
-              />
-              <label class="form-check-label" htmlFor="flexRadioDefault2">
-                Credit Card Payment
-              </label>
-            </div>
-          </div>
+          ))}
+
         </div>
 
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            maxWidth: "400px",
-            marginRight: "auto",
-          }}
-        >
-          <div
-            style={{
-              padding: "10px",
-              background:
-                "linear-gradient(to right, #030F03 0%, #155715 50%,rgb(32, 70, 32) 100%)",
-            }}
-          >
-            <h3 style={{ color: "rgb(243, 200, 148)" }}>Your Cart</h3>
-          </div>
-          <div
-            style={{
-              background: "white",
-              padding: "15px",
-              boxShadow: " rgba(0, 0, 0, 0.1) 0px 4px 12px",
-            }}
-          >
-            {cartItems.length === 0 ? (
-              <p style={{ color: "red", fontSize: "40px" }}>
-                Your cart is empty.
-              </p>
-            ) : (
-              <>
-                {cartItems.map((item) => (
-                  <div
-                    key={item.productId}
-                    className="cart-item"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      background: "white",
-                      padding: "5px",
-                      border: "1px solid gray",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        gap: "30px",
-                      }}
-                    >
-                      <div style={{ width: "100px" }}>
-                        <img src={item.image} alt={item.name} width="80" />
-                      </div>
-                      <div>
-                        <p style={{ fontWeight: "bold" }}>{item.name}</p>
-                        <p style={{ fontWeight: "bold" }}>₹{item.price}</p>
-                        <p style={{ fontWeight: "bold" }}>
-                          Qty : {item.quantity}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <div
-                  className="cart-item mt-2"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    background: "rgb(243, 200, 148)",
-                    padding: "5px",
-                    height: "40px",
-                    border: "1px solid gray",
-                  }}
-                >
-                  <p>
-                    Total : <strong>₹{total.toFixed(2)}</strong>
-                  </p>
-                </div>
-                <div
-                  className="cart-item"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    background: "rgb(243, 200, 148)",
-                    padding: "5px",
-                    height: "40px",
+        {/* TOTAL */}
+        <div className="mt-4 space-y-2 text-sm">
 
-                    border: "1px solid gray",
-                  }}
-                >
-                  <p>
-                    Tax : <strong>₹{tax.toFixed(2)}</strong>
-                  </p>
-                </div>
-                <div
-                  className="cart-item"
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    background: "rgb(243, 200, 148)",
-                    padding: "5px",
-                    height: "40px",
-                    border: "1px solid gray",
-                  }}
-                >
-                  <p>
-                    Grand Total : <strong>₹{grandTotal.toFixed(2)}</strong>{" "}
-                  </p>
-                </div>
-                <button
-                  onClick={placeOrder}
-                  className="delete-btn mt-2"
-                  style={{ width: "100%", fontSize: "20px" }}
-                >
-                  Pay Now ₹{grandTotal.toFixed(2)}
-                </button>
-              </>
-            )}
+          <div className="flex justify-between">
+            <span>Total</span>
+            <span>₹{total.toFixed(2)}</span>
           </div>
+
+          <div className="flex justify-between">
+            <span>Tax (5%)</span>
+            <span>₹{tax.toFixed(2)}</span>
+          </div>
+
+          <div className="flex justify-between font-semibold text-lg border-t pt-2">
+            <span>Grand Total</span>
+            <span>₹{grandTotal.toFixed(2)}</span>
+          </div>
+
         </div>
+
+        {/* BUTTON */}
+        <button
+          onClick={placeOrder}
+          className="mt-5 w-full bg-gradient-to-r from-[#a86a2b] to-[#c99b64] text-white py-3 rounded-lg font-semibold hover:scale-105 transition"
+        >
+          Pay Now ₹{grandTotal.toFixed(2)}
+        </button>
+
       </div>
-    </>
-  );
+
+    </div>
+
+  </div>
+);
 }
 export default CheckOut;

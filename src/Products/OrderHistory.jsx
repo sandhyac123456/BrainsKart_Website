@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import "./Register.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import { Link } from "react-router-dom";
 
 function OrderHistory() {
   const [orders, setOrders] = useState([]);
@@ -14,12 +13,16 @@ function OrderHistory() {
   const [paymentFilter, setPaymentFilter] = useState("all");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const fetchOrders = async () => {
     try {
       setLoading(true);
       setError("");
       let res;
+
+      console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
       if (showDatePicker && startDate && endDate) {
         res = await axios.post("/api/orders/range", { startDate, endDate });
       } else if (view === "today") {
@@ -27,25 +30,18 @@ function OrderHistory() {
       } else {
         res = await axios.get("/api/orders");
       }
-
-      let fetchedOrders = Array.isArray(res?.data) ? res.data : [];
+console.log("API Response:", res.data); // 🔥 important
+      let fetched = Array.isArray(res?.data) ? res.data : [];
 
       if (paymentFilter !== "all") {
-        if (paymentFilter === "Cash on Delivery") {
-          fetchedOrders = fetchedOrders.filter(
-            (order) => order.paymentMethod.toLowerCase() === "cash on delivery"
-          );
-        } else if (paymentFilter === "Online") {
-          fetchedOrders = fetchedOrders.filter(
-            (order) => order.paymentMethod.toLowerCase() === "online"
-          );
-        }
+        fetched = fetched.filter((order) =>
+          order.paymentMethod?.toLowerCase() === paymentFilter.toLowerCase()
+        );
       }
 
-      setOrders(fetchedOrders);
-    } catch (err) {
+      setOrders(fetched);
+    } catch {
       setError("Failed to fetch orders.");
-      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -56,257 +52,253 @@ function OrderHistory() {
     fetchOrders();
   }, [view, startDate, endDate, paymentFilter, showDatePicker]);
 
-  const handleDeleteOrder = async (orderId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this order?"
-    );
-    if (!confirmDelete) return;
-    try {
-      await axios.delete(`/api/orders/${orderId}`);
-      setOrders((prev) => prev.filter((order) => order._id !== orderId));
-      toast.success("Order Deleted Successfully!");
-    } catch (err) {
-      console.log("Error Deleting Order:", err);
-    }
+  const handleDeleteOrder = async (id) => {
+    if (!window.confirm("Ar you sure you wat to Delete this order?")) return;
+    await axios.delete(`/api/orders/${id}`);
+    setOrders((prev) => prev.filter((o) => o._id !== id));
+    toast.success("Order Deleted Successfully!");
   };
 
   return (
-    <>
-      <ToastContainer position="top-right" autoClose={2000} />
-      <div className="head">
-        <div className="text">
-          <span
-            style={{
-              marginLeft: "540px",
-              fontWeight: "bold",
-              fontSize: "35px",
-            }}
+    <div className="min-h-screen bg-gradient-to-b from-[#f8f3ec] to-[#f1e4d5]">
+ <ToastContainer position="top-right" theme="colored" autoClose={2000}/>
+
+      {/* HEADER */}
+      <div className="bg-gradient-to-r from-[#a86a2b] to-[#c99b64] py-3 shadow-md">
+        <h2 className="text-2xl font-semibold text-white text-center tracking-wide">
+          Order History
+        </h2>
+      </div>
+
+      {/* CONTROLS */}
+      <div className="p-4 flex flex-col items-center gap-4">
+
+        <div className="flex flex-wrap justify-center gap-3">
+
+          {/* TODAY */}
+          <button
+            onClick={() => { setView("today"); setShowDatePicker(false); }}
+            className={`px-6 py-2 rounded-full text-sm font-semibold transition duration-300
+              ${view === "today"
+                ? "bg-gradient-to-r from-[#2f6fed] to-[#4f8dfd] text-white shadow-lg scale-105"
+                : "bg-white text-gray-700 border hover:bg-gray-100 hover:scale-105"
+              }`}
           >
-            Order History
-          </span>
+            Today
+          </button>
+
+          {/* ALL */}
+          <button
+            onClick={() => { setView("all"); setShowDatePicker(false); }}
+            className={`px-6 py-2 rounded-full text-sm font-semibold transition duration-300
+              ${view === "all"
+                ? "bg-gradient-to-r from-gray-700 to-gray-900 text-white shadow-lg scale-105"
+                : "bg-white text-gray-700 border hover:bg-gray-100 hover:scale-105"
+              }`}
+          >
+            All
+          </button>
+
+          {/* FILTER */}
+          <button
+            onClick={() => { setShowDatePicker(!showDatePicker); setView("range"); }}
+            className="px-6 py-2 rounded-full text-sm font-semibold 
+            bg-gradient-to-r from-sky-400 to-blue-500 text-white 
+            hover:scale-105 hover:shadow-lg transition duration-300"
+          >
+            Filter
+          </button>
+
+          {/* DROPDOWN */}
+          <select
+            value={paymentFilter}
+            onChange={(e) => setPaymentFilter(e.target.value)}
+            className="px-4 py-2 rounded-full border bg-white text-sm shadow-md 
+            focus:outline-none focus:ring-2 focus:ring-[#c99b64]"
+          >
+            <option value="all">All</option>
+            <option value="Cash on Delivery">COD</option>
+            <option value="Online">Online</option>
+          </select>
+
         </div>
-      </div>
 
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          flexWrap: "wrap",
-          gap: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <button
-          className={`btn-1 ${view === "today" ? "active" : ""}`}
-          onClick={() => {
-            setView("today");
-            setShowDatePicker(false);
-          }}
-        >
-          Today's Orders
-        </button>
-        <button
-          className={`btn-2 ${view === "all" ? "active" : ""}`}
-          onClick={() => {
-            setView("all");
-            setShowDatePicker(false);
-          }}
-        >
-          All Orders
-        </button>
-        <button
-          className={`btn-3 ${showDatePicker ? "active" : ""}`}
-          onClick={() => {
-            setShowDatePicker(!showDatePicker);
-            setView("range");
-          }}
-        >
-          {showDatePicker ? "Hide Date Picker" : "Show Date Picker"}
-        </button>
-        <select
-          value={paymentFilter}
-          onChange={(e) => setPaymentFilter(e.target.value)}
-          style={{
-            padding: "5px 10px",
-            borderRadius: "5px",
-            background: "gray",
-            fontWeight: "bold",
-          }}
-        >
-          <option value="all">All Payments</option>
-          <option value="Cash on Delivery">Cash on Delivery</option>
-          <option value="Online">Online</option>
-        </select>
-      </div>
+        {/* DATE FILTER */}
+        {showDatePicker && (
+          <div className="flex flex-wrap gap-4 items-center justify-center">
 
-      {showDatePicker && (
-        <div style={{ textAlign: "center", marginTop: "15px" }}>
-          <div style={{ textAlign: "center", marginTop: "15px" }}>
-            <label style={{ marginRight: "10px", fontWeight: "bold" }}>
-              Start Date:
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                style={{ marginLeft: "5px", marginRight: "20px" }}
-              />
-            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="border p-2 rounded-md"
+            />
 
-            <label style={{ marginRight: "10px", fontWeight: "bold" }}>
-              End Date:
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                style={{ marginLeft: "5px", marginRight: "20px" }}
-              />
-            </label>
-          </div>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="border p-2 rounded-md"
+            />
 
-          <div
-            style={{
-              marginTop: "15px",
-              display: "flex",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              gap: "20px",
-            }}
-          >
             <button
-              style={{ background: "green", color: "white", width: "120px" }}
-              className="btn-4"
               onClick={fetchOrders}
+              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
             >
               Apply
             </button>
+
             <button
-              style={{ background: "red", color: "white", width: "120px" }}
-              className="btn-5"
               onClick={() => {
                 setStartDate("");
                 setEndDate("");
                 setShowDatePicker(false);
                 setView("today");
               }}
+              className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
             >
-              Cancel
+              Reset
             </button>
-          </div>
-        </div>
-      )}
 
-      <div
-        style={{
-          textAlign: "center",
-          fontSize: "25px",
-          fontWeight: "bold",
-          marginTop: "15px",
-        }}
-      >
-        Total Orders: {orders.length}
+          </div>
+        )}
+
+        {/* TOTAL */}
+        <p className="text-lg font-semibold text-gray-700">
+          Total Orders: {orders.length}
+        </p>
+
       </div>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: "20px",
-          marginTop: "30px",
-        }}
-      >
-        {loading && (
-          <p style={{ fontWeight: "bold", color: "red" }}>
-            Loading Orders....
-          </p>
-        )}
-        {error && <p style={{ fontWeight: "bold", color: "red" }}>{error}</p>}
-        {!loading && !error && orders.length === 0 && (
-          <p style={{ marginTop: "40px", fontWeight: "bold", color: "gray" }}>
-            No orders found for this selection.
+      {/* ORDERS */}
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 px-6 pb-10">
+
+        {loading && <p className="text-center text-2xl font-semibold text-red-500">Loading...</p>}
+        {error && <p className="text-center text-2xl font-semibold text-red-500">{error}</p>}
+
+        {!loading && orders.length === 0 && (
+          <p className="text-center text-2xl font-semibold text-gray-500">
+            No orders found
           </p>
         )}
 
         {orders.map((order) => (
           <div
             key={order._id}
-            style={{
-              width: "380px",
-              background: "wheat",
-              padding: "15px",
-              borderRadius: "10px",
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-            }}
+            className="bg-gradient-to-br from-[#ad6f31] to-[#c99b64] 
+            text-white rounded-2xl shadow-md hover:shadow-xl 
+            hover:scale-[1.02] transition duration-300 p-5 flex flex-col justify-between"
           >
-            <h5>Order #:{order._id}</h5>
-            <p>
-              <strong>Name:</strong> {order.address?.username}
-            </p>
-            <p>
-              <strong>Total:</strong> ₹{order.total?.toFixed(2)}
-            </p>
-            <p>
-              <strong>Address:</strong> {order.address?.street},{" "}
-              {order.address?.city}, {order.address?.state}
-            </p>
-            <p>
-              <strong>Mobile:</strong> {order.address?.mobile}
-            </p>
-            <p>
-              <strong>Payment Method:</strong> {order.paymentMethod}
-            </p>
-            <p>
-              <strong>Payment Status:</strong>{" "}
-              <span
-                style={{
-                  color:
-                    order.paymentStatus === "Success"
-                      ? "green"
-                      : order.paymentStatus === "Failed"
-                      ? "red"
-                      : "blue",
-                  fontWeight: "bold",
-                }}
-              >
-                {order.paymentStatus === "Pending" || !order.paymentStatus ? (
-                  <>
-                    Your payment is pending. Please continue to{" "}
-                    <Link to="/payment">
-                      <span
-                        style={{ color: "red", textDecoration: "underline" }}
-                      >
-                        Payment
-                      </span>
-                    </Link>
-                  </>
-                ) : (
-                  order.paymentStatus
-                )}
-              </span>
-            </p>
 
-            {order.cartItems?.map((item, index) => (
-              <div key={index} style={{ display: "flex", gap: "10px" }}>
-                <img src={item.image} alt="" width="50" height="50" />
-                <div>
-                  <p style={{ marginBottom: "2px" }}>{item.name}</p>
-                  <p>
-                    Qty: {item.quantity} | ₹{item.price}
-                  </p>
-                </div>
-              </div>
-            ))}
+            {/* DETAILS */}
+<div className="space-y-1">
 
+  {/* ORDER ID */}
+  <h4 className="font-semibold text-white text-sm">
+    Order ID : {order._id.slice(0, 12)}...
+  </h4>
+
+  {/* NAME */}
+  <p className="text-sm text-white">
+    <span className="font-semibold">Name :</span> {order.address?.username}
+  </p>
+
+  {/* TOTAL */}
+  <p className="text-sm text-white">
+    <span className="font-semibold">Total :</span> ₹{order.grandTotal?.toFixed(2)}
+  </p>
+
+  {/* ADDRESS */}
+  <p className="text-sm text-white leading-tight">
+    <span className="font-semibold">Address :</span>{" "}
+    {order.address?.street}, {order.address?.city}, {order.address?.state}
+  </p>
+
+  {/* MOBILE */}
+  <p className="text-sm text-white">
+    <span className="font-semibold">Mobile :</span> {order.address?.mobile}
+  </p>
+
+  {/* PAYMENT METHOD */}
+  <p className="text-sm text-white mt-1">
+    <span className="font-semibold">Payment :</span> {order.paymentMethod}
+  </p>
+
+  {/* STATUS */}
+<div className="mt-2 flex items-center gap-3">
+
+  {/* LEFT TEXT */}
+  <p className="text-sm font-semibold text-white">
+    Payment Status :
+  </p>
+
+  {/* RIGHT BADGE */}
+  {order.paymentStatus === "Success" ? (
+    <span className="ml-2 px-3 py-[2px] text-xs rounded-full font-semibold bg-green-200 text-green-800 cursor-default">
+      Success
+    </span>
+  ) : (
+    <span
+      onClick={() => {
+        if (order.paymentStatus !== "Success") {
+          navigate(`/payment`);
+        }
+      }}
+      className={`ml-2 px-3 py-[2px] text-xs rounded-full font-semibold transition
+
+        ${
+          order.paymentStatus === "Success"
+            ? "bg-green-200 text-green-800 cursor-not-allowed opacity-80"
+            : order.paymentStatus === "Failed"
+            ? "bg-red-200 text-red-800 cursor-pointer hover:bg-red-300"
+            : "bg-blue-200 text-blue-800 cursor-pointer hover:bg-blue-300"
+        }
+      `}
+    >
+      {order.paymentStatus || "Pending"}
+    </span>
+  )}
+
+</div>
+
+  {/* ITEMS */}
+  <div className="mt-3 space-y-2">
+    {order.cartItems?.map((item, i) => (
+      <div
+        key={i}
+        className="flex gap-3 items-center bg-white p-2 rounded-lg shadow-sm"
+      >
+        <img
+          src={item.image}
+          className="w-12 h-12 object-cover rounded-md border"
+        />
+        <div className="text-xs text-gray-800">
+          <p className="font-medium">{item.name}</p>
+          <p>
+            Qty: {item.quantity} | ₹{item.price}
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+
+</div>
+
+            {/* DELETE */}
             <button
-              className="btn-5"
               onClick={() => handleDeleteOrder(order._id)}
+              className="mt-5 w-full bg-red-600 hover:bg-red-500/90 
+              text-white py-2 rounded-lg text-sm font-semibold 
+              shadow-md hover:shadow-lg transition duration-300"
             >
               Delete Order
             </button>
+
           </div>
         ))}
+
       </div>
-    </>
+    </div>
   );
 }
 

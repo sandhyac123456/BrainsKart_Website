@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import "./Register.css";
-const API = import.meta.env.VITE_API_URL ;
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+const API = import.meta.env.VITE_API_URL;
 
 function CreateProduct() {
   const [formData, setFormData] = useState({
@@ -12,38 +13,48 @@ function CreateProduct() {
     category: "",
   });
 
-  let updateImage = async (event) => {
-    let imageFile = event.target.files[0];
-    let base64Image = await convertBase64String(imageFile);
-    setFormData({
-      ...formData,
-      image: base64Image,
-    });
-  };
+  const [preview, setPreview] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(false);
 
-  let convertBase64String = (imageFile) => {
-    return new Promise((resolve, reject) => {
-      let fileReader = new FileReader();
-      fileReader.readAsDataURL(imageFile);
-      fileReader.addEventListener("load", () => {
-        if (fileReader.result) {
-          resolve(fileReader.result);
-        } else {
-          reject("Error Occurred");
-        }
-      });
-    });
-  };
   const navigate = useNavigate();
-  const { category } = useParams(); 
+  const { category } = useParams();
 
   useEffect(() => {
     if (category) {
-      const capitalized =
+      const cap =
         category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
-      setFormData((prev) => ({ ...prev, category: capitalized }));
+      setFormData((prev) => ({ ...prev, category: cap }));
     }
   }, [category]);
+
+  //  Convert image
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject("Error");
+    });
+  };
+
+  //  File select
+  const handleFile = async (file) => {
+    const base64 = await convertBase64(file);
+    setFormData({ ...formData, image: base64 });
+    setPreview(base64);
+  };
+
+  const updateImage = async (e) => {
+    handleFile(e.target.files[0]);
+  };
+
+  //  Drag & Drop
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  };
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -52,94 +63,132 @@ function CreateProduct() {
     }));
   };
 
+  // 🔥 Submit
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       await axios.post(`${API}/api/products`, formData);
-      alert("Product added successfully!");
+
+      setToast(true);
+      setTimeout(() => setToast(false), 3000);
 
       const lower = formData.category.toLowerCase();
       if (lower === "men") navigate("/mens");
       else if (lower === "women") navigate("/womens");
       else if (lower === "kids") navigate("/kids");
-    } catch (error) {
+    } catch (err) {
       alert("Failed to add product");
-      console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <>
-      <div className="head">
-        <div className="text">
-          <span style={{ marginLeft: "8px",fontWeight:"bold" }}>Create Product</span>
-        </div>
+   <div className="min-h-screen bg-gradient-to-b from-[#f8f3ec] to-[#f1e4d5]">
+ <ToastContainer position="top-right" theme="colored" autoClose={2000}/>
+         {/* HEADER */}
+         <div className="bg-gradient-to-r from-[#a86a2b] to-[#c99b64] py-3 shadow-md">
+           <h2 className="text-2xl font-semibold text-white text-center tracking-wide">
+           Create Product
+           </h2>
       </div>
+      {/* TOAST */}
+      {toast && (
+        <div className="fixed top-20 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg">
+          ✅ Product Added Successfully!
+        </div>
+      )}
+      {/* FORM */}
+      <div className="flex justify-center items-start bg-gray-50 px-4 pt-6 pb-10 min-h-screen">
+        <div className="w-full max-w-md rounded-xl overflow-x-hidden shadow-lg">
 
-      <div style={{ maxWidth: "500px", margin: "auto", padding: "20px" }}>
-        <div className="container">
-          <div className="row" style={{ width: "500px" }}>
-            <h4 className="heading">New Product</h4>
-            <form className="dot" onSubmit={handleSubmit}>
-            <div className="form-group mt-3">
-              <select style={{boxShadow:"none"}}
+          {/* TOP */}
+          <div className="bg-gradient-to-r from-[#030F03] via-[#155715] to-[#204620] text-white text-lg font-semibold px-4 py-3">
+            Add New Product
+          </div>
+
+          {/* BODY */}
+          <div className="bg-gradient-to-r from-[#bb742e] to-[#c99b64] p-5 flex flex-col gap-4">
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+              {/* CATEGORY */}
+              <select
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
                 required
-                className="form-control"
+                className="w-full rounded-md p-2 border"
               >
                 <option value="">-- Select Category --</option>
                 <option value="Men">Men</option>
                 <option value="Women">Women</option>
                 <option value="Kids">Kids</option>
               </select>
-              </div>
-              
-              <div className="form-group mt-3">
+
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Product Name"
+                required
+                className="w-full rounded-md p-2 border"
+              />
+
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+                className="border-2 border-dashed border-gray-400 rounded-md p-4 text-center bg-white cursor-pointer"
+              >
+                <p className="text-sm text-gray-600">
+                  Drag & Drop Image OR Click Below
+                </p>
+
                 <input
-                  type="text"
-                  value={formData.name}
-                  name="name"
-                  onChange={handleChange}
-                  className="form-control"
-                  placeholder="Product Name"
+                  type="file"
+                  onChange={updateImage}
+                  className="mt-2"
                   required
                 />
               </div>
-              <div className="form-group mt-3">
-                <div className="custom-file">
-                  <input
-                    type="file"
-                    name="image"
-                    onChange={updateImage}
-                    className="custom-file-input form-control"
-                    id="inputGroupFile01"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="form-group mt-3">
-                <input
-                  type="number"
-                  value={formData.price}
-                  name="price"
-                  onChange={handleChange}
-                  className="form-control"
-                  placeholder="Price"
-                  required
+
+              {preview && (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="w-full h-40 object-contain rounded-md bg-white"
                 />
-              </div>
-              
-              <div className="form-group mt-3">
-                <input type="submit" value="submit" className="create-btn1" />
-              </div>
+              )}
+
+              {/* PRICE */}
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                placeholder="Price"
+                required
+                className="w-full rounded-md p-2 border"
+              />
+
+              {/* BUTTON */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-gradient-to-r from-[#030F03] via-[#155715] to-[#204620] text-white py-2 rounded-md font-semibold hover:bg-black transition"
+              >
+                {loading ? "Adding..." : "Submit"}
+              </button>
+
             </form>
           </div>
         </div>
       </div>
-    </>
+    
+    </div>
   );
 }
 

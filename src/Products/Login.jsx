@@ -5,6 +5,8 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../Redux/authSlice";
 import axios from "axios";
 const API = import.meta.env.VITE_API_URL;
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -13,6 +15,10 @@ function Login() {
   });
 
   const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false); // 👁️
+  const [loading, setLoading] = useState(false); // 🔄
+  const [rememberMe, setRememberMe] = useState(false); // 🔐
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -45,119 +51,158 @@ function Login() {
 
     if (Object.keys(validationErrors).length === 0) {
       try {
+        setLoading(true); // 🔄 start loading
+
         const res = await axios.post(`${API}/api/auth/login`, {
           email: formData.email,
           password: formData.password,
         });
 
         const user = res.data.user;
-        localStorage.setItem(`user_${user.email}_data`, JSON.stringify(user));
 
-        localStorage.setItem("lastLoggedInUserEmail", user.email);
+        // 🔐 remember me logic
+        if (rememberMe) {
+          localStorage.setItem(`user_${user.email}_data`, JSON.stringify(user));
+          localStorage.setItem("lastLoggedInUserEmail", user.email);
+        }
 
         dispatch(loginSuccess(user));
 
-        console.log("User logged in:", user);
-
-        alert("You're logged in successfully!");
+        toast.success("You're logged in successfully!");
+          setTimeout(()=>{
         navigate("/");
+        },1500)
       } catch (error) {
         console.error("Login Error:", error);
-        alert(
+        toast.error(
           error.response?.data?.message || "Login failed. Please try again."
         );
+      } finally {
+        setLoading(false); // 🔄 stop loading
       }
     }
   };
 
   return (
-    <>
-      <div className="head">
-        <div className="text">
-          <i className="fas fa-sign-in-alt"></i>
-          <span style={{ marginLeft: "8px", fontWeight: "bold" }}>
-            Login Here
-          </span>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-[#f5f3f0] to-[#e9e4dc] flex flex-col">
+      
+      <ToastContainer position="top-right" theme="colored" autoClose={2000} />
+
+      {/* HEADER */}
+      <div className="bg-gradient-to-r from-[#a86a2b] to-[#c99b64] py-3 shadow-md">
+        <h2 className="text-center text-2xl font-bold text-white tracking-wide">
+          Login Here
+        </h2>
       </div>
 
-      <div className="container mt-3 form-wrapper">
-        <div className="row" style={{ width: "330px" }}>
-          <h3 className="heading">Login</h3>
-          <form className="form-box" onSubmit={handleSubmit}>
-            <div className="form-group">
+      {/* FORM */}
+      <div className="flex flex-1 justify-center items-center p-4">
+
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+
+          {/* TOP */}
+          <div className="bg-gradient-to-r from-[#030f03] via-[#155715] to-[#204620] py-3">
+            <h3 className="text-center text-lg font-semibold text-[#f3c894]">
+              Welcome Back
+            </h3>
+          </div>
+
+          {/* FORM BODY */}
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+
+            {/* EMAIL */}
+            <div>
               <input
                 type="email"
                 id="email"
                 placeholder="Email"
-                className={`form-control ${
-                  errors.email ? "is-invalid" : formData.email && "is-valid"
-                }`}
                 value={formData.email}
                 onChange={handleChange}
+                className={`w-full border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[#a86a2b]
+                  ${errors.email ? "border-red-500" : "border-gray-300"}`}
               />
-              <div className={errors.email ? "text-danger" : "text-success"}>
+              <p className={`text-sm mt-1 ${errors.email ? "text-red-500" : "text-green-600"}`}>
                 {errors.email ? errors.email : formData.email && "Looks good"}
-              </div>
+              </p>
             </div>
 
-            <div className="form-group mt-3">
+            {/* PASSWORD */}
+            <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"} // 👁️ toggle
                 id="password"
                 placeholder="Password"
-                className={`form-control ${
-                  errors.password
-                    ? "is-invalid"
-                    : formData.password && "is-valid"
-                }`}
                 value={formData.password}
                 onChange={handleChange}
+                className={`w-full border rounded-md px-3 py-2 pr-10 outline-none focus:ring-2 focus:ring-[#a86a2b]
+                  ${errors.password ? "border-red-500" : "border-gray-300"}`}
               />
-              <div className={errors.password ? "text-danger" : "text-success"}>
-                {errors.password
-                  ? errors.password
-                  : formData.password && "Looks good"}
-              </div>
-              <div style={{ marginTop: "8px", textAlign: "right" }}>
+
+              {/* 👁️ ICON */}
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2.5 cursor-pointer text-gray-500"
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </span>
+
+              <p className={`text-sm mt-1 ${errors.password ? "text-red-500" : "text-green-600"}`}>
+                {errors.password ? errors.password : formData.password && "Looks good"}
+              </p>
+
+              <div className="text-right mt-1">
                 <Link
                   to="/forgot-password"
-                  className="text-primary"
-                  style={{ fontSize: "14px" }}
+                  className="text-sm text-blue-600 hover:underline"
                 >
                   Forgot Password?
                 </Link>
               </div>
             </div>
 
-            <div className="form-group mt-3">
-              <input type="submit" value="LOGIN" className="create-btn1" />
+            {/*  REMEMBER ME */}
+            <div className="flex items-center justify-between text-sm">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                Remember Me
+              </label>
             </div>
 
-            <p
-              style={{
-                marginTop: "15px",
-                marginBottom: "0",
-                fontWeight: "bold",
-              }}
+            {/* 🔄 BUTTON */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-[#030f03] via-[#155715] to-[#204620] text-[#f3c894] py-2 rounded-lg font-semibold hover:scale-105 transition flex justify-center items-center gap-2"
             >
-              New To Brains Kart?{" "}
-              <Link
-                className="nav-link d-inline text-primary"
-                style={{ fontWeight: "bold" }}
-                to="/register"
-              >
+              {loading ? (
+                <>
+                  <span className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
+            </button>
+
+            {/* REGISTER LINK */}
+            <p className="text-center text-sm font-medium">
+              New to BrainSkart?{" "}
+              <Link to="/register" className="text-blue-600 hover:underline">
                 Register
               </Link>
             </p>
+
           </form>
 
-          <h4 className="heading" style={{ textAlign: "center" }}>
-            <span className="logo1">BRAINSKART</span>
-          </h4>
         </div>
+
       </div>
-    </>
+
+    </div>
   );
 }
 

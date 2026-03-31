@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./Register.css";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const API = import.meta.env.VITE_API_URL ;
 
 function UpdateProduct() {
@@ -65,68 +68,109 @@ function UpdateProduct() {
     console.log("data", Data);
     try {
       await axios.put(`${API}/api/products/${id}`, Data);
-      alert("Product updated successfully!");
+      toast.success("Product updated successfully!");
       navigate("/cart");
     } catch (error) {
-      alert("Failed to update product");
+      toast.error("Failed to update product");
       console.error(error);
     }
   };
 
   return (
-    <>
-      <div className="head">
-        <div className="text">
-          <span style={{ marginLeft: "8px", fontWeight: "bold" }}>
-            update Product
-          </span>
-        </div>
-      </div>{" "}
-      <div style={{ maxWidth: "500px", margin: "auto", padding: "20px" }}>
-        <div className="container">
-          <div className="row" style={{ width: "500px" }}>
-            <h4 className="heading">New Product</h4>
-            <form className="dot" onSubmit={handleSubmitForm}>
-              <div className="form-group mt-3">
-                <input
-                  type="text"
-                  value={Data.name}
-                  name="name"
-                  onChange={handleChangeData}
-                  className="form-control"
-                  placeholder="Product Name"
-                />
-              </div>
-              <div className="form-group mt-3">
-                <div className="custom-file">
-                  <input
-                    type="file"
-                    name="image"
-                    onChange={updateImage}
-                    className="custom-file-input form-control"
-                    id="inputGroupFile01"
-                  />
-                </div>
-              </div>
-              <div className="form-group mt-3">
-                <input
-                  type="number"
-                  value={Data.price}
-                  name="price"
-                  onChange={handleChangeData}
-                  className="form-control"
-                  placeholder="Price"
-                />
-              </div>
+   <div className="min-h-screen bg-gradient-to-b from-[#f8f3ec] to-[#f1e4d5]">
+ <ToastContainer position="top-right" theme="colored" autoClose={2000}/>
 
-              <div className="form-group mt-3">
-                <input type="submit" value="submit" className="create-btn1" />
-              </div>
-            </form>
-          </div>
+      {/* HEADER */}
+      <div className="bg-gradient-to-r from-[#a86a2b] to-[#c99b64] py-3 shadow-md">
+        <h2 className="text-2xl font-semibold text-white text-center tracking-wide">
+          Update Product
+        </h2>
+    </div>
+
+    {/* CARD */}
+    <div className="flex justify-center items-center py-10 px-4">
+
+      <div className="w-full max-w-md rounded-xl overflow-x-hidden shadow-xl">
+
+        {/* TOP BLACK */}
+        <div className="bg-gradient-to-r from-[#030F03] via-[#155715] to-[#204620] text-white text-center text-lg font-semibold px-5 py-3">
+          Edit Product
         </div>
+
+        {/* BODY */}
+        <div className="bg-gradient-to-r from-[#bb742e] to-[#c99b64] px-6 py-6 space-y-4">
+
+          <form onSubmit={handleSubmitForm} className="space-y-4">
+
+            {/* NAME */}
+            <input
+              type="text"
+              value={Data.name}
+              name="name"
+              onChange={handleChangeData}
+              placeholder="Product Name"
+              className="w-full px-3 py-2 rounded-md border bg-white outline-none focus:ring-2 focus:ring-black"
+            />
+
+            {/* IMAGE BOX */}
+            <div className="bg-white border-2 border-dashed border-gray-400 rounded-md p-4 text-center">
+
+              <input
+                type="file"
+                name="image"
+                onChange={updateImage}
+                className="text-sm"
+              />
+
+              {/* PREVIEW */}
+              {Data.image && (
+                <img
+                  src={Data.image}
+                  className="mt-3 w-full h-32 object-cover rounded-md"
+                />
+              )}
+
+            </div>
+
+            {/* PRICE */}
+            <input
+              type="number"
+              value={Data.price}
+              name="price"
+              onChange={handleChangeData}
+              placeholder="Price"
+              className="w-full px-3 py-2 rounded-md border bg-white outline-none focus:ring-2 focus:ring-black"
+            />
+
+            {/* BUTTON */}
+            <div className="flex gap-3">
+
+  <button
+    type="submit"
+    className="w-full bg-[#1f3d2b] text-white py-2 rounded-md font-semibold hover:bg-[#2f5f42] transition"
+  >
+    Update
+  </button>
+
+  <button
+    type="button"
+    onClick={() => navigate("/cart")}
+    className="w-full bg-gray-400 text-white py-2 rounded-md font-semibold hover:bg-gray-500 transition"
+  >
+    Cancel
+  </button>
+
+</div>
+
+          </form>
+
+        </div>
+
       </div>
-    </>
-  );
+
+    </div>
+
+  </div>
+);
 }
 export default UpdateProduct;
