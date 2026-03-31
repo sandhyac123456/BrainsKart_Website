@@ -1,12 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import bg from "../assets/s.jpeg"
 
 function Home() {
   return (
     <section
       className="flex flex-col justify-center items-center w-full h-[calc(100vh-60px)] relative text-center px-4"
       style={{
-        backgroundImage: "url('/src/assets/s.jpeg')",
+        backgroundImage: `url(${bg})`,
         backgroundPosition: "center",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
